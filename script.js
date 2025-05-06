@@ -1,6 +1,5 @@
 // ********** DOM **********
 
-// DOM elements
 const secondsEl = document.querySelector('#seconds');
 const minutesEl = document.querySelector('#minutes');
 const hoursEl = document.querySelector('#hours');
@@ -8,14 +7,12 @@ const daysEl = document.querySelector('#days');
 
 // Set target date and display it
 const targetDate = new Date('May 6, 2025 15:00:00 UTC');
-document.getElementById('target-date-display').textContent = 'Countdown to: May 6, 2025 15:00:00 UTC';
+if (document.getElementById('target-date-display')) {
+  document.getElementById('target-date-display').textContent = 'Countdown to: May 6, 2025 15:00:00 UTC';
+}
 
-// pad 0s if digit is less than 10
-const padZeros = num => {
-  return num >= 0 && num < 10 ? `0${num}` : num;
-};
+const padZeros = num => num >= 0 && num < 10 ? `0${num}` : num;
 
-// flip card on countdown
 const flipCard = (el, card) => {
   card.addEventListener('transitionend', () => {
     const clonedCard = card.cloneNode(true);
@@ -32,7 +29,6 @@ const flipCard = (el, card) => {
   }
 };
 
-// setup card
 const setupCard = (el, currentTime, nextTime, resetTime) => {
   currentTime = padZeros(currentTime);
   nextTime = padZeros(nextTime);
@@ -43,13 +39,15 @@ const setupCard = (el, currentTime, nextTime, resetTime) => {
   el.setAttribute('data-next-number', nextTime);
   cardFaceFront.innerText = currentTime;
   cardFaceBack.innerText = nextTime;
-  resetTime && flipCard(el, card);
+  // Only flip if resetTime is provided AND currentTime is not zero or nextTime is not zero
+  if (resetTime !== null && (currentTime !== '00' || nextTime !== '00')) {
+    flipCard(el, card);
+  }
 };
 
-// update DOM countdown values
 const updateDOM = (el, currentTime, resetTime) => {
   let nextTime = currentTime - 1;
-  if (resetTime) {
+  if (resetTime !== null) {
     if (currentTime === 0) {
       nextTime = resetTime;
     } else if (currentTime === -1) {
@@ -57,10 +55,13 @@ const updateDOM = (el, currentTime, resetTime) => {
       nextTime = resetTime - 1;
     }
   }
+  // Don't flip if time is up (currentTime is zero and nextTime is negative)
+  if (currentTime === 0 && nextTime === -1) {
+    nextTime = 0;
+  }
   setupCard(el, currentTime, nextTime, resetTime);
 };
 
-// Calculate time remaining
 function getTimeRemaining(endtime) {
   const total = Date.parse(endtime) - Date.parse(new Date());
   const seconds = Math.floor((total / 1000) % 60);
@@ -70,10 +71,10 @@ function getTimeRemaining(endtime) {
   return { total, days, hours, minutes, seconds };
 }
 
-// Update the countdown display
 function updateCountdown() {
   const t = getTimeRemaining(targetDate);
-  updateDOM(daysEl, t.days, 365); // Use a large reset value for days (or adjust as needed)
+  // Only use reset value if days are greater than zero
+  updateDOM(daysEl, t.days, t.days > 0 ? 365 : null);
   updateDOM(hoursEl, t.hours, 24);
   updateDOM(minutesEl, t.minutes, 60);
   updateDOM(secondsEl, t.seconds, 60);
@@ -85,7 +86,7 @@ function updateCountdown() {
 
 // Initialize DOM with initial values
 const t = getTimeRemaining(targetDate);
-updateDOM(daysEl, t.days, 365);
+updateDOM(daysEl, t.days, t.days > 0 ? 365 : null);
 updateDOM(hoursEl, t.hours, 24);
 updateDOM(minutesEl, t.minutes, 60);
 updateDOM(secondsEl, t.seconds, 60);
