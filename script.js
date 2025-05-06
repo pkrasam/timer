@@ -73,10 +73,10 @@ const SECONDS = 60; // 1 min
 
 // per challenge README, start the count at 14 days
 // but I want to match the screenshot
-let days = 8;
-let hours = 23;
-let minutes = 55;
-let seconds = 41;
+let days = 1;
+let hours = 1;
+let minutes = 1;
+let seconds = 1;
 
 let interval;
 
