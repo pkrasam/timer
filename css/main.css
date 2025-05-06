@@ -69,6 +69,13 @@ body {
   text-align: center;
 }
 
+/* Add this block here */
+h2#target-date-display {
+  margin: 1.5rem auto;
+  text-align: center;
+  /* font-size: 1.2em;  <-- Only if you want to override the default */
+}
+
 .countdown {
   display: -webkit-box;
   display: -ms-flexbox;
