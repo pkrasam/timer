@@ -1,5 +1,4 @@
 // ********** DOM **********
-
 // DOM elements
 const secondsEl = document.querySelector('#seconds');
 const minutesEl = document.querySelector('#minutes');
@@ -67,43 +66,84 @@ const updateDOM = (el, currentTime, resetTime) => {
 };
 
 // ********** COUNTDOWN TIMER **********
+// Timers
+const HOURS = 24; // 1 day
+const MINUTES = 60; // 1 hr
+const SECONDS = 60; // 1 min
 
-// Set your target date and time (e.g., May 6, 2025 15:00 UTC)
-const targetDate = new Date('May 6, 2025 15:00:00 UTC');
+// per challenge README, start the count at 14 days
+// but I want to match the screenshot
+let days = 1;
+let hours = 1;
+let minutes = 1;
+let seconds = 1;
 
-// Calculate time remaining
-function getTimeRemaining(endtime) {
-  const total = Date.parse(endtime) - Date.parse(new Date());
-  const seconds = Math.floor((total / 1000) % 60);
-  const minutes = Math.floor((total / 1000 / 60) % 60);
-  const hours = Math.floor((total / (1000 * 60 * 60)) % 24);
-  const days = Math.floor(total / (1000 * 60 * 60 * 24));
+let interval;
 
-  return { total, days, hours, minutes, seconds };
-}
+// if seconds === 0, minutes-- seconds = 60
+// if minutes === 0, hours-- minute = 60 seconds = 60
+// if hours === 0, days-- hours = 60 minute = 60 seconds = 60
+// if days === 0 hours === 0 minutes === 0 seconds === 0, END countdown
 
-// Update the countdown display
-function updateCountdown() {
-  const t = getTimeRemaining(targetDate);
-
-  // Update DOM
-  updateDOM(daysEl, t.days, 99); // Use a large reset value for days (or adjust as needed)
-  updateDOM(hoursEl, t.hours, 24);
-  updateDOM(minutesEl, t.minutes, 60);
-  updateDOM(secondsEl, t.seconds, 60);
-
-  if (t.total <= 0) {
-    clearInterval(interval);
-    console.log('END!!');
+const countdownDays = () => {
+  if (days > 0) {
+    days--;
+    updateDOM(daysEl, days, days);
+  } else {
+    return;
   }
-}
+};
 
-// Initialize DOM with initial values
-const t = getTimeRemaining(targetDate);
-updateDOM(daysEl, t.days, 99);
-updateDOM(hoursEl, t.hours, 24);
-updateDOM(minutesEl, t.minutes, 60);
-updateDOM(secondsEl, t.seconds, 60);
+const countdownHours = () => {
+  hours--;
+  updateDOM(hoursEl, hours, HOURS);
 
-// Start the countdown
-let interval = setInterval(updateCountdown, 1000);
+  if (hours < 0) {
+    countdownDays();
+    hours = HOURS;
+  }
+};
+
+const countdownMinutes = () => {
+  minutes--;
+  updateDOM(minutesEl, minutes, MINUTES);
+
+  if (minutes < 0) {
+    countdownHours();
+    minutes = MINUTES;
+  }
+};
+
+const countdownSeconds = () => {
+  seconds--;
+  updateDOM(secondsEl, seconds, SECONDS);
+
+  if (seconds < 0) {
+    countdownMinutes();
+    seconds = SECONDS;
+  }
+};
+
+const countdown = () => {
+  if (days === 0 && hours === 0 && minutes === 0 && seconds === 0) {
+    console.log('END!!');
+    clearInterval(interval);
+    return;
+  }
+
+  // console.log(`${days} days ${hours}hrs ${minutes}min ${seconds}sec`);
+  countdownSeconds();
+};
+
+// Start countdown
+const startCountdown = () => {
+  interval = setInterval(countdown, 1000);
+};
+
+// initialize DOM
+updateDOM(secondsEl, seconds);
+updateDOM(minutesEl, minutes);
+updateDOM(hoursEl, hours);
+updateDOM(daysEl, days);
+
+startCountdown();
