@@ -69,11 +69,13 @@ body {
   text-align: center;
 }
 
-/* Add this block here */
 h2#target-date-display {
-  margin: 1.5rem auto;
+  margin: 1em auto;
+  font-size: clamp(1.5rem, 4vw, 1.8rem);
+  letter-spacing: clamp(0.25em, 4vw, 0.225em);
+  text-transform: uppercase;
   text-align: center;
-  /* font-size: 1.2em;  <-- Only if you want to override the default */
+  color: inherit; /* or set a specific color */
 }
 
 .countdown {
